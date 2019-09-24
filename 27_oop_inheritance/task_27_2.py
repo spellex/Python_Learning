@@ -20,7 +20,8 @@ Out[4]: 'Interface                  IP-Address      OK? Method Status           
 
 '''
 import netmiko
-from netmiko import cisco_ios
+from netmiko.cisco.cisco_ios import CiscoIosBase
+
 device_params = {
     'device_type': 'cisco_ios',
     'ip': '192.168.100.1',
@@ -33,6 +34,7 @@ device_params = {
 class MyNetmiko(CiscoIosBase):
     def __init__(self, **device_params):
         super().__init__(**device_params)
+        self.ssh = netmiko.ConnectHandler(**device_params)
         self.ssh.enable()
 
     def send_command(self, command):
@@ -40,3 +42,7 @@ class MyNetmiko(CiscoIosBase):
 
     def send_config_set(self, commands):
         return self.ssh.send_config_set(commands)
+
+if __name__ == '__main__':
+    r1 = MyNetmiko(**device_params)
+    print(r1.send_command('sh ip int br'))
